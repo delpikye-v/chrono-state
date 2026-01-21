@@ -1,2 +1,2 @@
-import { Priority } from './scheduler';
-export declare function watch<T>(getter: () => T, callback: (val: T) => void, priority?: Priority): () => void;
+import type { Priority } from "intentx-core-z";
+export declare function watch<T>(getter: () => T, fn: (value: T) => void, priority?: Priority): () => void;

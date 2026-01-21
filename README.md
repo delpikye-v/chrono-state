@@ -1,27 +1,42 @@
 # ⚙️ chrono-state-z
 
-[![NPM](https://img.shields.io/npm/v/chrono-state-z.svg)](https://www.npmjs.com/package/chrono-state-z)  
-![Downloads](https://img.shields.io/npm/dt/chrono-state-z.svg)  
+[![NPM](https://img.shields.io/npm/v/chrono-state-z.svg)](https://www.npmjs.com/package/chrono-state-z) ![Downloads](https://img.shields.io/npm/dt/chrono-state-z.svg)  
 
-<a href="https://codesandbox.io/p/sandbox/xt6npl" target="_blank">LIVE EXAMPLE</a>
-
----
-
-**chrono-state-z** is a **reactive, intent-first runtime**
-with **atoms, computed, async effects, FSM, form engine, and devtools timeline.**
-
-> **Logic lives outside React.** React only renders state and emits intents.
+<a href="https://codesandbox.io/p/sandbox/8mnycx" target="_blank">LIVE EXAMPLE</a>
 
 ---
 
-## ✨ Why / When to Use
+**chrono-state-z** is a **reactive, intent-first state runtime**  
+designed to keep **business logic outside React**.
 
-- Zero hooks in UI components
-- Complex async flows (login → fetch → redirect)
-- Predictable & testable side effects
-- Headless testing without rendering
-- Architecture-driven reactive design
-- Devtools timeline for replay & debugging
+It provides **atoms, computed values, async state, effects, scheduling**,  
+with a **headless core** and **thin React bindings**.
+
+> **React renders state. Logic lives elsewhere.**
+
+---
+
+## ✨ Why chrono-state-z?
+
+Use chrono-state-z when you need:
+
+- Predictable state & side-effects
+- Complex async flows (fetch → invalidate → retry)
+- Logic reusable outside React (tests, workers, backend)
+- Fine-grained reactivity (no global rerenders)
+- Clear separation between **logic** and **view**
+
+---
+
+## 🧠 Mental Model
+
+- Atom — small reactive state unit
+- Computed — derived value, cached and reactive
+- AsyncAtom — async state with suspense-style read
+- Effect — reactive side-effect runner
+- Scheduler — priority-based execution control
+- Store / Intent — intent-driven state orchestration
+- React hooks — thin bindings over the headless core
 
 ---
 
@@ -31,18 +46,12 @@ with **atoms, computed, async effects, FSM, form engine, and devtools timeline.*
 npm install chrono-state-z
 ```
 
-## 🧠 Mental Model
+---
 
-- Atoms: reactive state units
-- Computed: derived values
-- Effects: middleware-style interceptors
-- FSM / Form: orchestrate async flows & validations
-- Timeline: devtools recording & replay
-- React: purely renders state + emits intents
+## 🔹 Core Usage
 
-## Examples
+### Atom & Computed
 
-#### 1️⃣ Core Atom + Computed + Scheduler
 ```ts
 import { atom, computed } from 'chrono-state-z'
 
@@ -50,171 +59,280 @@ const count = atom(0)
 const double = computed(() => count() * 2)
 
 count.set(5)
+
 console.log(count())   // 5
 console.log(double())  // 10
-
-count.set(10)
-console.log(count())   // 10
-console.log(double())  // 20
 ```
 
-#### 2️⃣ Async Atom + Async Computed
-```ts
-import { asyncAtom, asyncComputed, atom } from 'chrono-state-z'
+---
 
-const value = asyncAtom(async () => {
-  await new Promise(r => setTimeout(r, 100))
-  return 42
+### Reactive Effects
+
+```ts
+import { atom, effect } from 'chrono-state-z'
+
+const count = atom(0)
+
+const dispose = effect(() => {
+  console.log('Count changed:', count())
 })
 
-value.load().then(v => console.log('AsyncAtom loaded:', v)) // 42
+count.set(1) // logs: Count changed: 1
+
+dispose()
+```
+
+---
+
+## 🔹 Async State
+
+### AsyncAtom
+
+```ts
+import { asyncAtom } from 'chrono-state-z'
+
+const user = asyncAtom(async () => {
+  const res = await fetch('/api/user')
+  return res.json()
+})
+
+await user.load()
+
+const u = user()
+```
+
+Invalidate & refetch:
+
+```ts
+user.invalidate()
+user.invalidate('low')
+```
+
+---
+
+### AsyncComputed
+
+```ts
+import { asyncComputed, atom } from 'chrono-state-z'
 
 const count = atom(2)
+
 const doubleAsync = asyncComputed(async () => {
   await new Promise(r => setTimeout(r, 50))
   return count() * 2
 })
 
-doubleAsync().then(v => console.log('AsyncComputed:', v)) // 4
-```
-
-#### 3️⃣ Batch / Transaction
-```ts
-import { atom, batch } from 'chrono-state-z'
-
-const a = atom(1)
-const b = atom(2)
-
-batch(() => {
-  a.set(10)
-  b.set(20)
-})
-
-console.log(a(), b()) // 10, 20
-```
-
-#### 4️⃣ FSM Example
-```ts
-import { createFSM } from 'chrono-state-z'
-
-const loginFSM = createFSM({
-  initial: { status: 'idle' },
-  states: {
-    idle: { on: { SUBMIT: ({ state }) => ({ status: 'loading' }) } },
-    loading: { on: { SUCCESS: () => ({ status: 'success' }), FAIL: () => ({ status: 'error' }) } },
-    success: {},
-    error: {},
-  },
-})
-
-await loginFSM.dispatch('SUBMIT')
-console.log(loginFSM.state().status) // 'loading'
-
-await loginFSM.dispatch('SUCCESS')
-console.log(loginFSM.state().status) // 'success'
-
-```
-
-#### 5️⃣ Form Engine + Validation
-```ts
-import { useForm } from 'chrono-state-z'
-
-const loginForm = useForm({
-  username: { initial: '', validate: val => val ? null : 'Required' },
-  password: { initial: '', validate: val => val ? null : 'Required' },
-})
-
-loginForm.fields.username.value.set('admin')
-
-if (loginForm.isValid()) {
-  console.log(loginForm.values())
-} else {
-  console.log('Validation errors exist')
-}
-
-```
-
-#### 6️⃣ React Integration (Headless View)
-```ts
-import React from 'react'
-import { atom, useAtom } from 'chrono-state-z'
-
-const count = atom(0)
-
-function CounterView({ countAtom }: { countAtom: typeof count }) {
-  const value = useAtom(countAtom)
-
-  return (
-    <div>
-      <div>Count: {value}</div>
-      <button onClick={() => countAtom.set(countAtom() + 1)}>+</button>
-    </div>
-  )
-}
-
-export function App() {
-  return <CounterView countAtom={count} />
-}
-
-```
-
-#### 7️⃣ Devtools Timeline & Replay
-```ts
-import { trackNode, schedule } from 'chrono-state-z'
-
-const node = trackNode('count')
-
-schedule(() => {
-  console.log('Replay atom change:', node.value)
-}, 'normal')
-
-```
-
-#### 8️⃣ Effect Subscription
-```ts
-import { effect } from 'chrono-state-z'
-
-const count = atom(0)
-
-const unsubscribe = effect(() => {
-  console.log('Effect triggered:', count())
-})
-
-count.set(1) // logs "Effect triggered: 1"
-
-// cleanup
-unsubscribe()
-
+await doubleAsync()
 ```
 
 ---
 
-## 🔍 Comparison / Features
-| Feature              | chrono-state-z | Redux | Zustand |
-| -------------------- | -------------- | ----- | ------- |
-| Atoms / Computed     | ✅              | ⚠️    | ⚠️      |
-| Async Effects        | ✅              | ⚠️    | ⚠️      |
-| FSM / Form Engine    | ✅              | ❌     | ❌     |
-| Scheduler / Priority | ✅              | ❌     | ❌     |
-| Headless Testing     | ✅              | ⚠️    | ⚠️      |
-| Devtools Timeline    | ✅              | ⚠️    | ❌      |
+## 🔹 Transactions (Batch updates)
+
+```ts
+import { atom, transaction } from 'chrono-state-z'
+
+const a = atom(1)
+const b = atom(2)
+
+transaction(() => {
+  a.set(10)
+  b.set(20)
+})
+
+console.log(a(), b())
+```
+
+---
+
+## 🔹 Store & Intent (Logic Layer)
+
+```ts
+import { createStore } from 'chrono-state-z'
+
+type State = {
+  saving: boolean
+  value: string
+}
+
+const logic = createStore<State>({
+  saving: false,
+  value: ''
+})
+
+logic.on('SAVE', async ({ state, setState }) => {
+  setState(s => { s.saving = true })
+
+  await fakeApiSave(state().value)
+
+  setState(s => { s.saving = false })
+})
+```
+
+Emit intent:
+
+```ts
+await logic.emit('SAVE')
+```
+
+---
+
+## 🔹 React Integration
+
+### useAtom
+
+```tsx
+import { atom, useAtom } from 'chrono-state-z'
+
+const count = atom(0)
+
+function Counter() {
+  const value = useAtom(count)
+
+  return (
+    <button onClick={() => count.set(value + 1)}>
+      Count: {value}
+    </button>
+  )
+}
+```
+
+---
+
+### useComputed
+
+```tsx
+import { computed, useComputed } from 'chrono-state-z'
+
+const total = computed(() => price() * qty())
+
+function TotalView() {
+  const value = useComputed(() => total())
+  return <div>Total: {value}</div>
+}
+```
+
+---
+
+### useAtomSelector
+
+```tsx
+import { atom, useAtomSelector } from 'chrono-state-z'
+
+const user = atom({ id: 1, name: 'Alice', age: 20 })
+
+function Username() {
+  const name = useAtomSelector(user, u => u.name)
+  return <span>{name}</span>
+}
+```
+
+---
+
+### useStore
+
+```tsx
+import { useStore } from 'chrono-state-z'
+
+function StoreView({ store }) {
+  const state = useStore(store)
+  return <pre>{JSON.stringify(state)}</pre>
+}
+```
+
+---
+
+### useStoreSelector
+
+```tsx
+import { useStoreSelector } from 'chrono-state-z'
+
+function SavingBadge({ store }) {
+  const saving = useStoreSelector(store, s => s.saving)
+  return saving ? 'Saving...' : 'Idle'
+}
+```
+
+---
+
+### useWatch
+
+```ts
+import { useWatch } from 'chrono-state-z'
+
+useWatch(
+  () => user(),
+  (u) => {
+    if (u?.role === 'admin') redirect('/admin')
+  }
+)
+```
+
+---
+
+## 🧩 Architecture Example
+
+```ts
+import { asyncAtom, computed } from 'chrono-state-z'
+
+export function createUserLogic() {
+  const user = asyncAtom(fetchUser)
+  const username = computed(() => user()?.name ?? 'Guest')
+
+  return {
+    user,
+    username,
+    reload: () => user.invalidate()
+  }
+}
+```
+
+```tsx
+function UserView({ logic }) {
+  const user = useAtom(logic.user)
+  const name = useComputed(() => logic.username())
+
+  return (
+    <div>
+      <h3>Hello {name}</h3>
+      <button onClick={logic.reload}>Reload</button>
+    </div>
+  )
+}
+```
+
+---
+
+## 📊 Comparison with Other Libraries
+
+| Feature                   | chrono-state-z  | Redux | Zustand  | Jotai  |
+|---------------------------|---------------- |-------|--------- |------- |
+| Fine-grained reactivity   | ✅              | ❌     | ⚠️       | ✅     |
+| Async primitives          | ✅              | ⚠️     | ❌       | ⚠️     |
+| Intent / effect layer     | ✅              | ⚠️     | ❌       | ❌     |
+| Scheduler / priority      | ✅              | ❌     | ❌       | ❌     |
+| Headless (non-React) core | ✅              | ❌     | ⚠️       | ❌     |
+| Testability               | ✅              | ⚠️     | ⚠️       | ❌     |
 
 ---
 
 ## 🚫 Anti-patterns
 
-- Don’t mutate atoms outside runtime
-- Don’t put business logic inside React
-- Always emit intent or use effects for orchestration
-- Don’t bypass scheduler / computed dependencies
+- Putting business logic inside React components
+- Mutating atom values directly
+- Coupling domain logic to UI events
+- Skipping computed / effects for orchestration
 
 ---
 
 ## 🧠 Philosophy
 
 - Logic lives outside React
-- Devtools timeline ensures determinism
-- Scheduler + priority enables safe async updates
+- Deterministic, testable state
+- Effects are explicit and traceable
+- UI is a pure projection of state
+
+---
 
 ## 📜 License
 

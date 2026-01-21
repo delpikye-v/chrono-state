@@ -1,5 +1,9 @@
-import { Atom } from './atom';
-export declare function asyncAtom<T>(fetcher: () => Promise<T>): Atom<T | undefined> & {
-    load: () => Promise<T>;
-    cancel: () => void;
+import { Priority } from "intentx-core-z";
+export type AsyncAtom<T> = {
+    (): T;
+    set(v: T, p?: Priority): void;
+    load(): Promise<T>;
+    cancel(): void;
+    invalidate(p?: Priority): void;
 };
+export declare function asyncAtom<T>(fetcher: () => Promise<T>): AsyncAtom<T>;

@@ -1,10 +1,9 @@
 {
   "name": "chrono-state-z",
-  "version": "1.1.0",
-  "description": "Chrono-state-z: Reactive, intent-first state management with FSM, forms, async atoms.",
+  "version": "2.0.0",
+  "description": "Reactive, intent-first state runtime with atoms, computed, async state, effects, and FSM. Logic-first, React-agnostic.",
   "license": "MIT",
   "author": "Delpi.Kye",
-
   "sideEffects": false,
 
   "main": "build/index.cjs.js",
@@ -29,7 +28,9 @@
     }
   },
 
-  "files": ["build"],
+  "files": [
+    "build"
+  ],
 
   "scripts": {
     "clean": "rimraf build",
@@ -43,44 +44,45 @@
     "url": "https://github.com/delpikye-v/chrono-state.git"
   },
 
-  "homepage": "https://github.com/delpikye-v/chrono-state#readme",
+  "homepage": "https://github.com/delpikye-v/chrono-state",
+
   "bugs": {
     "url": "https://github.com/delpikye-v/chrono-state/issues"
   },
 
   "keywords": [
     "react",
-    "reactive",
     "state-management",
+    "reactive",
+    "atom",
+    "computed",
+    "async-state",
     "external-store",
-    "intent-runtime",
+    "intent",
+    "intent-first",
+    "logic-first",
+    "headless",
     "fsm",
-    "form-engine",
-    "async-atom",
-    "computed-state",
-    "timeline",
-    "devtools",
-    "no-hooks",
-    "concurrent-safe",
-    "preemption"
+    "effects",
+    "scheduler"
   ],
 
   "peerDependencies": {
-    "react": "^18.0.0"
+    "react": "^18.0.0",
+    "intentx-core-z": "^1.0.0"
   },
 
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
+    "@types/react": "^18.2.43",
+    "react": "^18.2.0",
     "rimraf": "^5.0.5",
     "rollup": "^4.9.6",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-typescript2": "^0.36.0",
-    "typescript": "^5.3.3",
     "tslib": "^2.6.2",
-
-    "react": "^18.2.0",
-    "@types/react": "^18.2.43"
+    "typescript": "^5.3.3"
   }
 }

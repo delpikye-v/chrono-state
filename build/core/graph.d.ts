@@ -17,8 +17,6 @@ export type GraphSnapshotNode = {
 };
 export declare function trackNode(type: NodeType, name?: string, value?: any): GraphNode;
 export declare function linkNodes(from: GraphNode, to: GraphNode): void;
-export declare function updateNodeValue(node: GraphNode, value: any): void;
 export declare function getGraphSnapshot(): GraphSnapshotNode[];
 export declare function highlightNode(id: number): void;
 export declare function clearHighlights(): void;
-export declare function resetGraph(): void;

@@ -1,1 +1,1 @@
-export declare function transaction(fn: () => void): void;
+export { batch as transaction } from "intentx-core-z";
