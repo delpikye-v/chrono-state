@@ -1,7 +1,7 @@
 {
   "name": "chrono-state-z",
-  "version": "2.0.0",
-  "description": "Reactive, intent-first state runtime with atoms, computed, async state, effects, and FSM. Logic-first, React-agnostic.",
+  "version": "2.1.0",
+  "description": "Intent-first, logic-centric reactive state runtime with atoms, computed, async state, effects, and deterministic scheduling. React-agnostic core.",
   "license": "MIT",
   "author": "Delpi.Kye",
   "sideEffects": false,
@@ -51,25 +51,25 @@
   },
 
   "keywords": [
-    "react",
     "state-management",
     "reactive",
     "atom",
     "computed",
     "async-state",
-    "external-store",
     "intent",
     "intent-first",
     "logic-first",
-    "headless",
-    "fsm",
     "effects",
-    "scheduler"
+    "scheduler",
+    "headless",
+    "react",
+    "react-hooks",
+    "react-18"
   ],
 
   "peerDependencies": {
     "react": "^18.0.0",
-    "intentx-core-z": "^1.0.0"
+    "intentx-core-z": "^2.1.0"
   },
 
   "devDependencies": {

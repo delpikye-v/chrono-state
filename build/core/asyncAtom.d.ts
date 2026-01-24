@@ -6,4 +6,4 @@ export type AsyncAtom<T> = {
     cancel(): void;
     invalidate(p?: Priority): void;
 };
-export declare function asyncAtom<T>(fetcher: () => Promise<T>): AsyncAtom<T>;
+export declare function asyncAtom<T>(fetcher: (signal?: AbortSignal) => Promise<T>): AsyncAtom<T>;

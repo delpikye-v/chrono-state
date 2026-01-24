@@ -1,4 +1,4 @@
-export declare function useStoreSelector<S, T>(store: {
+export declare function useStoreSelector<S, R>(store: {
     state(): S;
     subscribe(fn: () => void): () => void;
-}, selector: (state: S) => T, isEqual?: (a: T, b: T) => boolean): T;
+}, selector: (state: S) => R, isEqual?: (a: R, b: R) => boolean): R;

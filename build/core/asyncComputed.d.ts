@@ -3,4 +3,4 @@ export type AsyncComputed<T> = {
     (): T;
     invalidate(p?: Priority): void;
 };
-export declare function asyncComputed<T>(getter: () => Promise<T>, priority?: Priority): AsyncComputed<T>;
+export declare function asyncComputed<T>(getter: (signal?: AbortSignal) => Promise<T>, priority?: Priority): AsyncComputed<T>;

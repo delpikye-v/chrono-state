@@ -1,4 +1,4 @@
-# ⚙️ chrono-state-z
+# ⏱️ chrono-state-z
 
 [![NPM](https://img.shields.io/npm/v/chrono-state-z.svg)](https://www.npmjs.com/package/chrono-state-z) ![Downloads](https://img.shields.io/npm/dt/chrono-state-z.svg)  
 
@@ -6,11 +6,9 @@
 
 ---
 
-**chrono-state-z** is a **reactive, intent-first state runtime**  
-designed to keep **business logic outside React**.
+**chrono-state-z** is a **reactive, intent-first state runtime** designed to keep **business logic outside React**.
 
-It provides **atoms, computed values, async state, effects, scheduling**,  
-with a **headless core** and **thin React bindings**.
+It provides **atoms, computed values, async state, effects, scheduling**, with a **headless core** and **thin React bindings**.
 
 > **React renders state. Logic lives elsewhere.**
 
@@ -43,7 +41,8 @@ Use chrono-state-z when you need:
 ## 📦 Installation
 
 ```bash
-npm install chrono-state-z
+# npm install react ## for react
+npm install intentx-core-z chrono-state-z
 ```
 
 ---
@@ -207,7 +206,7 @@ import { computed, useComputed } from 'chrono-state-z'
 const total = computed(() => price() * qty())
 
 function TotalView() {
-  const value = useComputed(() => total())
+  const value = useComputed(total)
   return <div>Total: {value}</div>
 }
 ```
@@ -217,8 +216,7 @@ function TotalView() {
 ### useAtomSelector
 
 ```tsx
-import { atom, useAtomSelector } from 'chrono-state-z'
-
+// atom() returns a callable reactive value
 const user = atom({ id: 1, name: 'Alice', age: 20 })
 
 function Username() {
@@ -233,11 +231,13 @@ function Username() {
 
 ```tsx
 import { useStore } from 'chrono-state-z'
+import type { Store } from 'chrono-state-z'
 
-function StoreView({ store }) {
+function StoreView({ store }: { store: Store<any> }) {
   const state = useStore(store)
-  return <pre>{JSON.stringify(state)}</pre>
+  return <pre>{JSON.stringify(state, null, 2)}</pre>
 }
+
 ```
 
 ---
@@ -245,13 +245,22 @@ function StoreView({ store }) {
 ### useStoreSelector
 
 ```tsx
+// Only re-renders when saving changes, not the whole store.
 import { useStoreSelector } from 'chrono-state-z'
 
 function SavingBadge({ store }) {
   const saving = useStoreSelector(store, s => s.saving)
+  // const saving = useStoreSelector(
+  //   store,
+  //   s => s.meta,
+  //   shallowEqual
+  // )
   return saving ? 'Saving...' : 'Idle'
 }
+
 ```
+- `selector` should be pure and stable.
+- If you need dynamic selection, memoize the selector.
 
 ---
 
@@ -260,28 +269,46 @@ function SavingBadge({ store }) {
 ```ts
 import { useWatch } from 'chrono-state-z'
 
-useWatch(
-  () => user(),
-  (u) => {
-    if (u?.role === 'admin') redirect('/admin')
-  }
-)
+function AuthGuard() {
+  useWatch(
+    () => user(),
+    (u) => {
+      if (u?.role === 'admin') {
+        redirect('/admin')
+      }
+    }
+  )
+
+  return null
+}
+
+```
+
+### AsyncAtom
+```ts
+const user = asyncAtom(fetchUser)
+
+// load explicitly
+await user.load()
+
+// read value (throws / suspends if not ready)
+const u = user()
 ```
 
 ---
 
-## 🧩 Architecture Example
+## 🧩 Architecture Pattern
 
 ```ts
 import { asyncAtom, computed } from 'chrono-state-z'
 
 export function createUserLogic() {
   const user = asyncAtom(fetchUser)
-  const username = computed(() => user()?.name ?? 'Guest')
+  const name = computed(() => user()?.name ?? 'Guest')
 
   return {
     user,
-    username,
+    name,
     reload: () => user.invalidate()
   }
 }
@@ -290,15 +317,16 @@ export function createUserLogic() {
 ```tsx
 function UserView({ logic }) {
   const user = useAtom(logic.user)
-  const name = useComputed(() => logic.username())
+  const name = useComputed(() => logic.name())
 
   return (
-    <div>
-      <h3>Hello {name}</h3>
+    <>
+      <div>Hello {name}</div>
       <button onClick={logic.reload}>Reload</button>
-    </div>
+    </>
   )
 }
+
 ```
 
 ---
@@ -336,4 +364,4 @@ function UserView({ logic }) {
 
 ## 📜 License
 
-MIT / Delpi
+MIT

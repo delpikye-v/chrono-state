@@ -1,9 +1,10 @@
 export { useAtom } from './useAtom';
+export { useAtomSelector } from './useAtomSelector';
+export { useBatch } from './useBatch';
 export { useComputed } from './useComputed';
+export { useEffectReact } from './useEffectReact';
 export { useFactoryAtom } from './useFactoryAtom';
 export { useStore } from './useStore';
 export { useStoreSelector } from './useStoreSelector';
 export { useWatch } from './useWatch';
-export { useEffectReact } from './useEffectReact';
-export { useBatch } from './useBatch';
 export { scheduleReactJob } from './schedule';
