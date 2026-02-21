@@ -1,7 +1,7 @@
 {
   "name": "chrono-state-z",
-  "version": "2.1.0",
-  "description": "Intent-first, logic-centric reactive state runtime with atoms, computed, async state, effects, and deterministic scheduling. React-agnostic core.",
+  "version": "2.2.0",
+  "description": "A fine-grained, intent-driven reactive state runtime for building complex React logic outside components.",
   "license": "MIT",
   "author": "Delpi.Kye",
   "sideEffects": false,
@@ -9,25 +9,13 @@
   "main": "build/index.cjs.js",
   "module": "build/index.esm.js",
   "types": "build/index.d.ts",
-
   "exports": {
     ".": {
       "types": "./build/index.d.ts",
       "import": "./build/index.esm.js",
       "require": "./build/index.cjs.js"
-    },
-    "./react": {
-      "types": "./build/react/index.d.ts",
-      "import": "./build/react/index.esm.js",
-      "require": "./build/react/index.cjs.js"
-    },
-    "./devtools": {
-      "types": "./build/devtools/index.d.ts",
-      "import": "./build/devtools/index.esm.js",
-      "require": "./build/devtools/index.cjs.js"
     }
   },
-
   "files": [
     "build"
   ],
@@ -43,35 +31,33 @@
     "type": "git",
     "url": "https://github.com/delpikye-v/chrono-state.git"
   },
-
   "homepage": "https://github.com/delpikye-v/chrono-state",
-
   "bugs": {
     "url": "https://github.com/delpikye-v/chrono-state/issues"
   },
-
   "keywords": [
     "state-management",
+    "react-state",
     "reactive",
+    "fine-grained",
+    "signals",
     "atom",
     "computed",
     "async-state",
-    "intent",
-    "intent-first",
-    "logic-first",
-    "effects",
     "scheduler",
+    "deterministic",
+    "intent",
+    "logic-first",
     "headless",
-    "react",
     "react-hooks",
     "react-18"
   ],
-
   "peerDependencies": {
-    "react": "^18.0.0",
-    "intentx-core-z": "^2.1.0"
+    "react": ">=18"
   },
-
+  "dependencies": {
+    "intentx-core-z": "^2.2.1"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-node-resolve": "^15.2.3",

@@ -6,17 +6,14 @@
 
 ---
 
-**chrono-state-z** is a **reactive, intent-first state runtime** designed to keep **business logic outside React**.
+**chrono-state-z** is a reactive state runtime that keeps business logic outside React.   
+It provides **atoms, computed values, async state, effects, scheduling**, with a **headless core** and **thin React bindings**.   
 
-It provides **atoms, computed values, async state, effects, scheduling**, with a **headless core** and **thin React bindings**.
-
-> **React renders state. Logic lives elsewhere.**
+> **React renders. Logic lives elsewhere.**
 
 ---
 
 ## ✨ Why chrono-state-z?
-
-Use chrono-state-z when you need:
 
 - Predictable state & side-effects
 - Complex async flows (fetch → invalidate → retry)
@@ -41,9 +38,47 @@ Use chrono-state-z when you need:
 ## 📦 Installation
 
 ```bash
-# npm install react ## for react
-npm install intentx-core-z chrono-state-z
+npm install chrono-state-z
+# If using React:
+npm install react
 ```
+
+---
+
+## ⚡ Quick Start
+
+```ts
+import { atom, computed, asyncAtom } from "chrono-state-z";
+
+const count = atom(0);
+const double = computed(() => count() * 2);
+
+const user = asyncAtom(async () =>
+  fetch("https://jsonplaceholder.typicode.com/todos/1")
+    .then(r => r.json())
+);
+```
+
+```ts
+import { useAtom, useComputed } from "chrono-state-z";
+
+function App() {
+  const value = useAtom(count);
+  const doubled = useComputed(double);
+  const username = useComputed(() => user()?.title);
+
+  return (
+    <button onClick={() => count.set(c => c + 1)}>
+      {value}
+    </button>
+  );
+}
+
+```
+
+✨ Fine-grained updates.  
+✨ Suspense-ready async.  
+✨ No reducers. No boilerplate.   
 
 ---
 
@@ -269,6 +304,8 @@ function SavingBadge({ store }) {
 ```ts
 import { useWatch } from 'chrono-state-z'
 
+const user = atom<{ role?: string } | null>(null)
+
 function AuthGuard() {
   useWatch(
     () => user(),
@@ -317,7 +354,7 @@ export function createUserLogic() {
 ```tsx
 function UserView({ logic }) {
   const user = useAtom(logic.user)
-  const name = useComputed(() => logic.name())
+  const name = useComputed(logic.name)
 
   return (
     <>
@@ -331,16 +368,74 @@ function UserView({ logic }) {
 
 ---
 
-## 📊 Comparison with Other Libraries
+## 🔍 Comparison
 
-| Feature                   | chrono-state-z  | Redux | Zustand  | Jotai  |
-|---------------------------|---------------- |-------|--------- |------- |
-| Fine-grained reactivity   | ✅              | ❌     | ⚠️       | ✅     |
-| Async primitives          | ✅              | ⚠️     | ❌       | ⚠️     |
-| Intent / effect layer     | ✅              | ⚠️     | ❌       | ❌     |
-| Scheduler / priority      | ✅              | ❌     | ❌       | ❌     |
-| Headless (non-React) core | ✅              | ❌     | ⚠️       | ❌     |
-| Testability               | ✅              | ⚠️     | ⚠️       | ❌     |
+<b>This is not about “better” — it's about architectural.</b>
+
+| Feature                     | chrono-state-z | Redux Toolkit | Zustand  | Jotai | MobX |
+| --------------------------- | -------------- | ------------- | -------- | ----- | ---- |
+| Fine-grained reactivity     | ✅              | ❌            | ⚠️       | ✅     | ✅   |
+| Built-in async primitives   | ✅              | ⚠️            | ❌       | ⚠️     | ❌   |
+| Scheduler / priority system | ✅              | ❌            | ❌       | ❌     | ❌   |
+| Headless (non-React) core   | ✅              | ✅            | ⚠️       | ⚠️     | ✅   |
+| Boilerplate level           | ✅              | ❌            | ✅       | ✅     | ⚠️   |
+| Devtools maturity           | ⚠️              | ✅            | ✅       | ⚠️     | ✅   |
+| Learning curve              | ⚠️              | ⚠️            | ✅       | ✅     | ⚠️   |
+
+
+<br />
+
+<b>📝 Notes</b>
+
+⚠️ Fine-grained in Zustand: achieved via selectors, but not dependency-tracked graph-level.
+
+⚠️ Async in Redux / Jotai / Recoil: supported via patterns (thunks, query libs, async selectors), not core-first primitives.
+
+⚠️ Headless in Zustand/Jotai: possible, but primarily designed for React usage.
+
+⚠️ Devtools: Redux and MobX have mature ecosystems; newer libs are still evolving.
+
+---
+
+## ⚖️ Strengths Compared to Others
+
+<b>vs Redux Toolkit</b>
+
+- More fine-grained updates
+- Less reducer boilerplate
+- Built-in reactive primitives
+- Redux has stronger ecosystem & devtools
+
+<b>vs Zustand</b>
+
+- More structured async handling
+- Explicit intent layer
+- Built-in scheduler support
+- Zustand is simpler & lighter for small apps
+
+<b>vs Jotai</b>
+
+- More explicit effect + scheduler control
+- Async-first primitives
+- Jotai is more minimal and React-native
+
+<b>vs MobX</b>
+
+- More explicit dependency graph (no proxy magic)
+- Better control over update priority
+- MobX is more ergonomic for mutable patterns
+
+<b>vs Recoil</b>
+
+- Headless core (not React-bound)
+- Explicit effect system
+- Recoil has better React DevTools integration
+
+<b>vs Solid signals</b>
+
+- Similar fine-grained reactive model
+- Designed for React ecosystem
+- Solid is framework-native and extremely optimized
 
 ---
 

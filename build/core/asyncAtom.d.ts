@@ -1,9 +1,10 @@
-import { Priority } from "intentx-core-z";
+import { CommonResource } from "./asyncResource";
 export type AsyncAtom<T> = {
-    (): T;
-    set(v: T, p?: Priority): void;
-    load(): Promise<T>;
-    cancel(): void;
-    invalidate(p?: Priority): void;
-};
-export declare function asyncAtom<T>(fetcher: (signal?: AbortSignal) => Promise<T>): AsyncAtom<T>;
+    (): T | undefined;
+} & CommonResource<T>;
+export declare function asyncAtom<T>(fetcher: (signal?: AbortSignal) => Promise<T>, options?: {
+    suspense?: boolean;
+}): AsyncAtom<T>;
+export declare function asyncAtomFamily<K, T>(factory: (key: K) => (signal?: AbortSignal) => Promise<T>, options?: {
+    suspense?: boolean;
+}): (key: K) => AsyncAtom<T>;

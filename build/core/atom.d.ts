@@ -1,6 +1,6 @@
-import { Priority } from "intentx-core-z";
-export type Atom<T> = (() => T) & {
-    set(v: T, p?: Priority): void;
-    subscribe(fn: () => void): () => void;
-};
-export declare function atom<T>(initial: T): Atom<T>;
+export type ReadonlyAtom<T> = () => T;
+export declare const atom: <T>(initial: T, options?: import("./createAtomFactory").AtomOptions<T>) => import("./createBaseAtom").Atom<T>;
+export declare const atomMiddleware: <T>(initial: T, middleware?: import("./createAtomFactory").AtomMiddleware<T>) => import("./createBaseAtom").Atom<T>;
+export declare function readonlyAtom<T>(atom: {
+    (): T;
+}): ReadonlyAtom<T>;
