@@ -1,6 +1,7 @@
 export * from "./atom";
 export * from "./asyncComputed";
 export * from "./createAtomFactory";
+export * from "./createBaseAtom";
 export { asyncAtom } from "./asyncAtom";
 export { computed } from "intentx-core-z";
 export { effect } from "intentx-core-z";

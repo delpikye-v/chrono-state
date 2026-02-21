@@ -1,6 +1,6 @@
 {
   "name": "chrono-state-z",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A fine-grained, intent-driven reactive state runtime for building complex React logic outside components.",
   "license": "MIT",
   "author": "Delpi.Kye",
