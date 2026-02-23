@@ -25,13 +25,13 @@ It provides **atoms, computed values, async state, effects, scheduling**, with a
 
 ## 🧠 Mental Model
 
-- Atom — small reactive state unit
-- Computed — derived value, cached and reactive
-- AsyncAtom — async state with suspense-style read
-- Effect — reactive side-effect runner
-- Scheduler — priority-based execution control
-- Store / Intent — intent-driven state orchestration
-- React hooks — thin bindings over the headless core
+- **Atom** → small reactive state unit  
+- **Computed** → derived, cached reactive value  
+- **AsyncAtom** → async resource with invalidate + priority  
+- **Effect** → reactive side-effect runner  
+- **Transaction** → batch updates  
+- **Store / Intent** → event-driven orchestration  
+- **React hooks** → thin bindings over the headless core  
 
 ---
 
@@ -281,16 +281,11 @@ function StoreView({ store }: { store: Store<any> }) {
 
 ```tsx
 // Only re-renders when saving changes, not the whole store.
-import { useStoreSelector } from 'chrono-state-z'
+import { useStoreSelector } from "chrono-state-z"
 
 function SavingBadge({ store }) {
   const saving = useStoreSelector(store, s => s.saving)
-  // const saving = useStoreSelector(
-  //   store,
-  //   s => s.meta,
-  //   shallowEqual
-  // )
-  return saving ? 'Saving...' : 'Idle'
+  return saving ? "Saving..." : "Idle"
 }
 
 ```
